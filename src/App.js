@@ -1,25 +1,64 @@
-import logo from './logo.svg';
-import './App.css';
+import 'date-fns';
+import React, { useState, useEffect } from 'react';
+import Grid from '@material-ui/core/Grid';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import useSound from 'use-sound';
+import alarm from './music/lll.mp3'
 
-function App() {
+export default function App() {
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [clock, setClock] = useState(new Date())
+  const [playMusic] = useSound(alarm)
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+
+    let hours = new Date().getHours()
+    let minutes = new Date().getMinutes()
+    let seconds = new Date().getSeconds()
+
+    let time = ((hours * 3600) + (minutes * 60) + seconds) * 1000
+
+    let hours1 = date.getHours()
+    let minutes1 = date.getMinutes()
+
+    let time1 = ((hours1 * 3600) + (minutes1 * 60)) * 1000
+
+    let timeOut = time1 - time
+    console.log(timeOut)
+
+    setTimeout(() => {
+      playMusic()
+      alert('TIME')
+    }, timeOut)
+
+  };
+  useEffect(() => {
+    setInterval(() => {
+      setClock(new Date())
+    }, 1 * 1000);
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Grid container justify="space-around">
+        <KeyboardTimePicker
+          margin="normal"
+          id="time-picker"
+          label="Time picker"
+          value={selectedDate}
+          onChange={handleDateChange}
+          KeyboardButtonProps={{
+            'aria-label': 'change time',
+          }}
+        />
+      </Grid>
+    </MuiPickersUtilsProvider>
   );
 }
-
-export default App;
